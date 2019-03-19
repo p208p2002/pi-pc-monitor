@@ -1,6 +1,8 @@
 import socket
 import sys
 import argparse
+from core import getBasicMsg
+
 
 host = 'localhost'
 
@@ -16,7 +18,7 @@ def echo_client(port):
     # Send data
     try:
         # Send data
-        message = "Test message. This will be echoed"
+        message = str(getBasicMsg())
         print ("Sending %s" % message)
         sock.sendall(message.encode('utf-8'))
         # Look for the response
@@ -35,6 +37,7 @@ def echo_client(port):
         sock.close()
 
 if __name__ == '__main__':
+    # getBasicMsg()
     parser = argparse.ArgumentParser(description='Socket Server Example')
     parser.add_argument('--port', action="store", dest="port", type=int, required=True)
     given_args = parser.parse_args()
