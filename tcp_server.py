@@ -2,35 +2,86 @@ import socket
 import sys
 import argparse
 import json
+import time
 
 host = 'localhost'
-data_payload = 2048
-backlog = 10
+data_payload = 4096
+backlog = 1
+
+#
+MachineInfo={}
+
+def showMonitorState():
+    cpuModel = MachineInfo.get('CPU_Model','unkonw')
+    cpuCount = MachineInfo.get('CPU_Count','unkonw')
+    cpuCountLogical = MachineInfo.get('CPU_Count_Logical','unkonw')
+    ramTotalSize = MachineInfo.get('RAM_Total_Size','unkonw')
+    print("Machine Info:",cpuModel,cpuCount,cpuCountLogical,ramTotalSize)
 
 
-def socket_server(port):
-    # Create a TCP socket
+
+def updateMonitorState(jsonStr):
+    global MachineInfo
+    jsonData={}
+    try:
+        jsonData = json.loads(jsonStr)
+    except:
+        print("Parse json data fail")
+
+    eventType = jsonData.get("Type")
+    print("Event Type:",eventType)
+
+    #case event type
+    if(eventType == 'BASIC_MSG'):
+        data = jsonData.get('Data',{})
+        MachineInfo = data
+    elif(eventType == 'USAGE_MSG'):
+        data = jsonData.get('Data',{})
+        print(data)
+        pass
+    else:
+        print('unknow event type')
+
+    # final
+    showMonitorState()
+
+
+def runSocketServer(port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # Enable reuse address/port
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    # sock.settimeout(5)
     server_address = (host, port)
     print ("Starting up echo server  on %s port %s" % server_address)
     sock.bind(server_address)
     sock.listen(backlog)
 
-    print ("Waiting to receive message from client")
+    #
+    print ("Waiting new client")
     client, address = sock.accept()
+    print("Address:",address)
+
+    #time out count
+    timeOut = 10.0
+    lastRecvTime = time.time()
+    nowtime = time.time()
     while True:
-        recvData = ''
-        data = client.recv(data_payload)
+        #over 10s no recv new data
+        if(nowtime - lastRecvTime >= timeOut):
+            print("client lost connect")
+            client.close()
+            print ("Waiting new client")
+            client, address = sock.accept()
+            lastRecvTime = time.time()
+            nowtime = time.time()
+
+        nowtime = time.time()#refresh time out count
+        data = client.recv(data_payload)#recv data
         if data:
-            print("\n\n")
-            print(data)
+            lastRecvTime = time.time()
+            updateMonitorState(data.decode())
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Socket Server Example')
     parser.add_argument('--port', action="store", dest="port", type=int, default=8080)
     given_args = parser.parse_args()
     port = given_args.port
-    socket_server(port)
+    runSocketServer(port)
