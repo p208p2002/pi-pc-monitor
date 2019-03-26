@@ -19,10 +19,8 @@ def echo_client(port):
 
 
 if __name__ == '__main__':
-    # getBasicMsg()
     parser = argparse.ArgumentParser(description='Socket Server Example')
-    # parser.add_argument('--port', action="store", dest="port", type=int, required=True)
+    parser.add_argument('--port', action="store", dest="port", type=int, default=8080)
     given_args = parser.parse_args()
-    # port = given_args.port
-    port = 8080
+    port = given_args.port
     echo_client(port)

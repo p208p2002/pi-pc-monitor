@@ -4,7 +4,7 @@ import argparse
 import json
 
 host = 'localhost'
-data_payload = 1024
+data_payload = 2048
 backlog = 10
 
 
@@ -30,8 +30,7 @@ def socket_server(port):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Socket Server Example')
-    # parser.add_argument('--port', action="store", dest="port", type=int, required=True)
+    parser.add_argument('--port', action="store", dest="port", type=int, default=8080)
     given_args = parser.parse_args()
-    # port = given_args.port
-    port = 8080
+    port = given_args.port
     socket_server(port)
