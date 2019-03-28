@@ -5,7 +5,7 @@ import time
 from core import getBasicMsg,getUsageMsg
 
 
-host = 'localhost'
+host = '192.168.43.50'
 defaultPort = 8080
 
 def echo_client(port):

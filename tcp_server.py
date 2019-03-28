@@ -4,12 +4,15 @@ import argparse
 import json
 import time
 
-host = 'localhost'
+host = ''
 data_payload = 4096
 backlog = 1
 
 #
 MachineInfo={}
+
+def showServerIP():
+    return print([(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1])
 
 def showMonitorState():
     cpuModel = MachineInfo.get('CPU_Model','unkonw')
@@ -17,7 +20,6 @@ def showMonitorState():
     cpuCountLogical = MachineInfo.get('CPU_Count_Logical','unkonw')
     ramTotalSize = MachineInfo.get('RAM_Total_Size','unkonw')
     print("Machine Info:",cpuModel,cpuCount,cpuCountLogical,ramTotalSize)
-
 
 
 def updateMonitorState(jsonStr):
@@ -84,4 +86,5 @@ if __name__ == '__main__':
     parser.add_argument('--port', action="store", dest="port", type=int, default=8080)
     given_args = parser.parse_args()
     port = given_args.port
+    showServerIP()
     runSocketServer(port)
