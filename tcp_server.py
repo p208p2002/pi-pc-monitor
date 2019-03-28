@@ -3,13 +3,32 @@ import sys
 import argparse
 import json
 import time
+import RPi.GPIO as gpio
 
 host = ''
 data_payload = 4096
 backlog = 1
 
 #
+DS = 16     # Serial Data
+STCP = 20  # Latch
+SHCP = 21  # Clock
+
+#
 MachineInfo={}
+
+def shiftout(byte):
+    gpio.output(STCP, 0)
+    b = ''
+    for x in range(8):
+        bit = ((byte >> x) & 1)
+        b = b + str(bit)
+        gpio.output(DS, bit)
+        gpio.output(SHCP, 1)
+        gpio.output(SHCP, 0)
+
+    print(b[::-1])
+    gpio.output(STCP, 1)
 
 def showServerIP():
     return print([(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1])
@@ -82,6 +101,18 @@ def runSocketServer(port):
             updateMonitorState(data.decode())
 
 if __name__ == '__main__':
+    #
+    gpio.setmode(gpio.BCM)
+    gpio.setup(DS, gpio.OUT)
+    gpio.setup(SHCP, gpio.OUT)
+    gpio.setup(STCP, gpio.OUT)
+
+    #
+    for x in range(256):
+        shiftout(x)
+        time.sleep(0.1)
+
+    #
     parser = argparse.ArgumentParser(description='Socket Server Example')
     parser.add_argument('--port', action="store", dest="port", type=int, default=8080)
     given_args = parser.parse_args()
