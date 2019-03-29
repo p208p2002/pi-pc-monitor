@@ -16,7 +16,7 @@ def echo_client(port):
     sock.send(getBasicMsg().encode('utf-8'))
     while True:
         sock.send(getUsageMsg().encode('utf-8'))
-        time.sleep(0.5)
+        time.sleep(0.25)
 
 
     sock.close()
