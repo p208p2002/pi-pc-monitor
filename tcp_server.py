@@ -19,6 +19,13 @@ STCP2 = 19
 SHCP2 = 13
 
 #
+IC_7447_A = 2
+IC_7447_B = 3
+IC_7447_C = 4
+IC_7447_D = 17
+
+
+#
 MachineInfo={}
 
 #
@@ -33,7 +40,6 @@ def shiftout(byte,outPipe):
         ds =  DS2     # Serial Data
         stcp = STCP2 # Latch
         shcp = SHCP2  # Clock
-
 
     gpio.output(stcp, 0)
     b = ''
@@ -148,9 +154,21 @@ if __name__ == '__main__':
     gpio.setup(DS, gpio.OUT)
     gpio.setup(SHCP, gpio.OUT)
     gpio.setup(STCP, gpio.OUT)
+
     gpio.setup(DS2, gpio.OUT)
     gpio.setup(SHCP2, gpio.OUT)
     gpio.setup(STCP2, gpio.OUT)
+
+    gpio.setup(IC_7447_A,gpio.OUT)
+    gpio.setup(IC_7447_B,gpio.OUT)
+    gpio.setup(IC_7447_C,gpio.OUT)
+    gpio.setup(IC_7447_D,gpio.OUT)
+
+    #test
+    gpio.output(IC_7447_A,1)
+    gpio.output(IC_7447_B,0)
+    gpio.output(IC_7447_C,0)
+    gpio.output(IC_7447_D,0)
 
     #
     for x in range(9):
