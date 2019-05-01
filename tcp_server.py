@@ -24,7 +24,6 @@ IC_7447_B = 3
 IC_7447_C = 4
 IC_7447_D = 17
 
-
 #
 MachineInfo={}
 
@@ -169,6 +168,7 @@ if __name__ == '__main__':
     gpio.output(IC_7447_B,0)
     gpio.output(IC_7447_C,0)
     gpio.output(IC_7447_D,0)
+    time.sleep(3)
 
     #
     for x in range(9):
