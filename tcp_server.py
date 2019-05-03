@@ -4,6 +4,7 @@ import argparse
 import json
 import time
 import RPi.GPIO as gpio
+import pi7447
 
 host = ''
 data_payload = 4096
@@ -29,6 +30,28 @@ MachineInfo={}
 
 #
 LED_STATE = [0,128,192,224,240,248,252,254,255] #0 1 2 3 4 5 6 7 8
+
+#
+BTN_PIN = 27
+DOT_PIN = 22
+SERVER_IP = 0
+
+def showIP(channel):
+    time.sleep(0.2)
+    digNum = pi7447.IC7447(IC_7447_A,IC_7447_B,IC_7447_C,IC_7447_D)
+    if (SERVER_IP == 0):
+        digNum.off()
+    else:
+        for i in range(len(SERVER_IP)):
+            if(SERVER_IP[i] != '.'):
+                digNum.show(int(SERVER_IP[i]))
+                gpio.output(DOT_PIN, 1)
+            else:
+                digNum.off()
+                gpio.output(DOT_PIN, 0)
+            time.sleep(0.5)
+        digNum.off()
+        gpio.output(DOT_PIN, 1)
 
 def shiftout(byte,outPipe):
     if(outPipe == 1):
@@ -158,33 +181,33 @@ if __name__ == '__main__':
     gpio.setup(SHCP2, gpio.OUT)
     gpio.setup(STCP2, gpio.OUT)
 
-    gpio.setup(IC_7447_A,gpio.OUT)
-    gpio.setup(IC_7447_B,gpio.OUT)
-    gpio.setup(IC_7447_C,gpio.OUT)
-    gpio.setup(IC_7447_D,gpio.OUT)
+    digNum = pi7447.IC7447(IC_7447_A,IC_7447_B,IC_7447_C,IC_7447_D)
 
-    #test
-    gpio.output(IC_7447_A,1)
-    gpio.output(IC_7447_B,0)
-    gpio.output(IC_7447_C,0)
-    gpio.output(IC_7447_D,0)
-    time.sleep(3)
+    gpio.setup(DOT_PIN, gpio.OUT)
+    gpio.setup(BTN_PIN, gpio.IN, pull_up_down=gpio.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
+    gpio.add_event_detect(BTN_PIN,gpio.RISING,callback=showIP) # Setup event on pin 10 rising edge
 
-    #
+
+    #self test
     for x in range(9):
         shiftout(LED_STATE[x],1)
         shiftout(LED_STATE[x],2)
+        digNum.show(x+1)
         time.sleep(0.05)
-    #
+
     for x in range(9):
         shiftout(LED_STATE[8-x],1)
         shiftout(LED_STATE[8-x],2)
+        digNum.show(9-x)
         time.sleep(0.05)
+
+    digNum.off()
 
     #
     parser = argparse.ArgumentParser(description='Socket Server Example')
     parser.add_argument('--port', action="store", dest="port", type=int, default=8080)
     given_args = parser.parse_args()
     port = given_args.port
-    print(showServerIP())
+    SERVER_IP=showServerIP()
+    print(SERVER_IP)
     runSocketServer(port)
