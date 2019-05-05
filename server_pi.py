@@ -5,21 +5,24 @@ import json
 import time
 import RPi.GPIO as gpio
 import pi7447
+from ic import IC74595,IC7447
 
 host = ''
 data_payload = 4096
 backlog = 1
 
 #
+gpio.setmode(gpio.BCM)
+
+#
 DS = 16     # Serial Data
 STCP = 20  # Latch
 SHCP = 21  # Clock
-#
+
 DS2 = 26
 STCP2 = 19
 SHCP2 = 13
 
-#
 IC_7447_A = 2
 IC_7447_B = 3
 IC_7447_C = 4
@@ -27,8 +30,6 @@ IC_7447_D = 17
 
 #
 MachineInfo={}
-
-#
 LED_STATE = [0,128,192,224,240,248,252,254,255] #0 1 2 3 4 5 6 7 8
 
 #
@@ -36,44 +37,26 @@ BTN_PIN = 27
 DOT_PIN = 22
 SERVER_IP = 0
 
+#parts
+digNumDisplay = IC7447(IC_7447_A,IC_7447_B,IC_7447_C,IC_7447_D)
+cpuLED = IC74595(DS,STCP,SHCP)
+ramLED = IC74595(DS2,STCP2,SHCP2)
+
 def showIP(channel):
     time.sleep(0.2)
-    digNum = pi7447.IC7447(IC_7447_A,IC_7447_B,IC_7447_C,IC_7447_D)
     if (SERVER_IP == 0):
-        digNum.off()
+        digNumDisplay.off()
     else:
         for i in range(len(SERVER_IP)):
             if(SERVER_IP[i] != '.'):
-                digNum.show(int(SERVER_IP[i]))
+                digNumDisplay.show(int(SERVER_IP[i]))
                 gpio.output(DOT_PIN, 1)
             else:
-                digNum.off()
+                digNumDisplay.off()
                 gpio.output(DOT_PIN, 0)
             time.sleep(0.5)
-        digNum.off()
+        digNumDisplay.off()
         gpio.output(DOT_PIN, 1)
-
-def shiftout(byte,outPipe):
-    if(outPipe == 1):
-        ds =  DS     # Serial Data
-        stcp = STCP # Latch
-        shcp = SHCP  # Clock
-    else:
-        ds =  DS2     # Serial Data
-        stcp = STCP2 # Latch
-        shcp = SHCP2  # Clock
-
-    gpio.output(stcp, 0)
-    b = ''
-    for x in range(8):
-        bit = ((byte >> x) & 1)
-        b = b + str(bit)
-        gpio.output(ds, bit)
-        gpio.output(shcp, 1)
-        gpio.output(shcp, 0)
-
-    # print(b[::-1])
-    gpio.output(stcp, 1)
 
 def showServerIP():
     return [(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]
@@ -86,26 +69,32 @@ def showMonitorState():
     print("Machine Info:",cpuModel,cpuCount,cpuCountLogical,ramTotalSize)
 
 def mapStateToLed(usedPrecent,pipNumber):
+        led = 0
+        if pipNumber == 1:
+            led = cpuLED
+        elif pipNumber == 2:
+            led = ramLED
+
         if(usedPrecent==0):
-            shiftout(LED_STATE[0],pipNumber)
+            led.shiftout(LED_STATE[0])
         elif(usedPrecent<=12.5):
-            shiftout(LED_STATE[1],pipNumber)
+            led.shiftout(LED_STATE[1])
         elif(usedPrecent<=25.0):
-            shiftout(LED_STATE[2],pipNumber)
+            led.shiftout(LED_STATE[2])
         elif(usedPrecent<=37.5):
-            shiftout(LED_STATE[3],pipNumber)
+            led.shiftout(LED_STATE[3])
         elif(usedPrecent<=50.0):
-            shiftout(LED_STATE[4],pipNumber)
+            led.shiftout(LED_STATE[4])
         elif(usedPrecent<=62.5):
-            shiftout(LED_STATE[5],pipNumber)
+            led.shiftout(LED_STATE[5])
         elif(usedPrecent<=75.0):
-            shiftout(LED_STATE[6],pipNumber)
+            led.shiftout(LED_STATE[6])
         elif(usedPrecent<=87.5):
-            shiftout(LED_STATE[7],pipNumber)
+            led.shiftout(LED_STATE[7])
         elif(usedPrecent<=100):
-            shiftout(LED_STATE[8],pipNumber)
+            led.shiftout(LED_STATE[8])
         else:
-            shiftout(0,pipNumber)
+            sled.shiftout(0)
 
 
 def updateMonitorState(jsonStr):
@@ -172,36 +161,24 @@ def runSocketServer(port):
 
 if __name__ == '__main__':
     #init
-    gpio.setmode(gpio.BCM)
-    gpio.setup(DS, gpio.OUT)
-    gpio.setup(SHCP, gpio.OUT)
-    gpio.setup(STCP, gpio.OUT)
-
-    gpio.setup(DS2, gpio.OUT)
-    gpio.setup(SHCP2, gpio.OUT)
-    gpio.setup(STCP2, gpio.OUT)
-
-    digNum = pi7447.IC7447(IC_7447_A,IC_7447_B,IC_7447_C,IC_7447_D)
-
     gpio.setup(DOT_PIN, gpio.OUT)
     gpio.setup(BTN_PIN, gpio.IN, pull_up_down=gpio.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
     gpio.add_event_detect(BTN_PIN,gpio.RISING,callback=showIP) # Setup event on pin 10 rising edge
 
-
     #self test
     for x in range(9):
-        shiftout(LED_STATE[x],1)
-        shiftout(LED_STATE[x],2)
-        digNum.show(x+1)
+        cpuLED.shiftout(LED_STATE[x])
+        ramLED.shiftout(LED_STATE[x])
+        digNumDisplay.show(x+1)
         time.sleep(0.05)
 
     for x in range(9):
-        shiftout(LED_STATE[8-x],1)
-        shiftout(LED_STATE[8-x],2)
-        digNum.show(9-x)
+        cpuLED.shiftout(LED_STATE[8-x])
+        ramLED.shiftout(LED_STATE[8-x])
+        digNumDisplay.show(9-x)
         time.sleep(0.05)
 
-    digNum.off()
+    digNumDisplay.off()
 
     #
     parser = argparse.ArgumentParser(description='Socket Server Example')
