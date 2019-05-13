@@ -4,7 +4,6 @@ import argparse
 import json
 import time
 import RPi.GPIO as gpio
-import pi7447
 from ic import IC74595,IC7447
 
 host = ''
