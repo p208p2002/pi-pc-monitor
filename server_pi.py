@@ -94,7 +94,7 @@ def mapStateToLed(usedPrecent,pipNumber):
         elif(usedPrecent<=100):
             led.shiftout(LED_STATE[8])
         else:
-            sled.shiftout(0)
+            led.shiftout(0)
 
 
 def updateMonitorState(jsonStr):
