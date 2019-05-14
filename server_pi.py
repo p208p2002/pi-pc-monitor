@@ -44,7 +44,7 @@ cpuLED = IC74595(DS,STCP,SHCP)
 ramLED = IC74595(DS2,STCP2,SHCP2)
 
 def signal_handler(sig, frame):
-    gpio.clean()
+    gpio.cleanup()
     sys.exit(0)
 
 def showIP(channel):
