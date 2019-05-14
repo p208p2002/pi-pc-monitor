@@ -161,7 +161,7 @@ def runSocketServer(port):
 if __name__ == '__main__':
     #init
     gpio.setup(DOT_PIN, gpio.OUT)
-    gpio.setup(BTN_PIN, gpio.IN, pull_up_down=gpio.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
+    gpio.setup(BTN_PIN, gpio.IN, pull_up_down=gpio.PUD_UP) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
     gpio.add_event_detect(BTN_PIN,gpio.RISING,callback=showIP) # Setup event on pin 10 rising edge
 
     #self test
