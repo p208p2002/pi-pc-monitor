@@ -160,8 +160,10 @@ def runSocketServer(port):
         nowtime = time.time()#refresh time out count
         data = client.recv(data_payload)#recv data
         if data:
+            gpio.output(DOT_PIN, 0)
             lastRecvTime = time.time()
             updateMonitorState(data.decode())
+        gpio.output(DOT_PIN, 1)
 
 if __name__ == '__main__':
     #init
