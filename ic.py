@@ -22,15 +22,24 @@ class IC74595():
         gpio.output(self.STCP, 1)
 
 class IC7447():
-    def __init__(self,A,B,C,D):
+    def __init__(self,A,B,C,D,DOT=None):
         self.A = A # mapping to 7447 input A - D
         self.B = B
         self.C = C
         self.D = D
+        self.DOT = DOT
         gpio.setup(self.A,gpio.OUT)
         gpio.setup(self.B,gpio.OUT)
         gpio.setup(self.C,gpio.OUT)
         gpio.setup(self.D,gpio.OUT)
+        if(self.DOT != None):
+            gpio.setup(self.DOT,gpio.OUT)
+
+    def dot(self,state):
+        if state:
+            gpio.output(self.DOT,0) #light up dot
+        else:
+            gpio.output(self.DOT,1) #turn off dot
 
     def off(self):
         gpio.output(self.A,1)
