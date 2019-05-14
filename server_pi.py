@@ -134,7 +134,7 @@ def runSocketServer(port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_address = (host, port)
-    print ("Starting up echo server  on %s port %s" % server_address)
+    print ("Starting up server  on %s port %s" % server_address)
     sock.bind(server_address)
     sock.listen(backlog)
 
