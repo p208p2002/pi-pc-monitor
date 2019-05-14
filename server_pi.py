@@ -4,6 +4,7 @@ import argparse
 import json
 import time
 import RPi.GPIO as gpio
+import signal
 from ic import IC74595,IC7447
 
 host = ''
@@ -40,6 +41,9 @@ SERVER_IP = 0
 digNumDisplay = IC7447(IC_7447_A,IC_7447_B,IC_7447_C,IC_7447_D)
 cpuLED = IC74595(DS,STCP,SHCP)
 ramLED = IC74595(DS2,STCP2,SHCP2)
+
+def signal_handler(sig, frame):
+    print('You pressed Ctrl+C!')
 
 def showIP(channel):
     if (SERVER_IP == 0):
@@ -162,6 +166,7 @@ if __name__ == '__main__':
     gpio.setup(DOT_PIN, gpio.OUT)
     gpio.setup(BTN_PIN, gpio.IN, pull_up_down=gpio.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
     gpio.add_event_detect(BTN_PIN,gpio.RISING,callback=showIP,bouncetime=1000) # Setup event on pin 10 rising edge
+    signal.signal(signal.SIGINT, signal_handler)
 
     #self test
     for x in range(9):
