@@ -39,7 +39,7 @@ DOT_PIN = 22
 SERVER_IP = 0
 
 #parts
-digNumDisplay = IC7447(IC_7447_A,IC_7447_B,IC_7447_C,IC_7447_D)
+digNumDisplay = IC7447(IC_7447_A,IC_7447_B,IC_7447_C,IC_7447_D,BTN_PIN)
 cpuLED = IC74595(DS,STCP,SHCP)
 ramLED = IC74595(DS2,STCP2,SHCP2)
 
@@ -54,13 +54,13 @@ def showIP(channel):
         for i in range(len(SERVER_IP)):
             if(SERVER_IP[i] != '.'):
                 digNumDisplay.show(int(SERVER_IP[i]))
-                gpio.output(DOT_PIN, 1)
+                digNumDisplay.dot(False)
             else:
                 digNumDisplay.off()
-                gpio.output(DOT_PIN, 0)
+                digNumDisplay.dot(True)
             time.sleep(0.5)
         digNumDisplay.off()
-        gpio.output(DOT_PIN, 1)
+        digNumDisplay.dot(False)
 
 def showServerIP():
     return [(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]
@@ -160,10 +160,10 @@ def runSocketServer(port):
         nowtime = time.time()#refresh time out count
         data = client.recv(data_payload)#recv data
         if data:
-            gpio.output(DOT_PIN, 0)
+            digNumDisplay.dot(True)
             lastRecvTime = time.time()
             updateMonitorState(data.decode())
-        gpio.output(DOT_PIN, 1)
+        digNumDisplay.dot(False)
 
 if __name__ == '__main__':
     #init
