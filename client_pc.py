@@ -26,7 +26,7 @@ def echo_client(host,port):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Socket Server Example')
     parser.add_argument('--port', action="store", dest="port", type=int, default=defaultPort)
-    parser.add_argument('--host', action="store", dest="host", type=int, default=defaulthost)
+    parser.add_argument('--host', action="store", dest="host", type=str, default=defaulthost)
     given_args = parser.parse_args()
     port = given_args.port
     host = given_args.host
