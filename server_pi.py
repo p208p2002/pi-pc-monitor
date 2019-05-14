@@ -70,7 +70,7 @@ def showMonitorState():
     cpuCount = MachineInfo.get('CPU_Count','unkonw')
     cpuCountLogical = MachineInfo.get('CPU_Count_Logical','unkonw')
     ramTotalSize = MachineInfo.get('RAM_Total_Size','unkonw')
-    print("Machine Info:",cpuModel,cpuCount,cpuCountLogical,ramTotalSize)
+    print("Machine Info:",cpuModel,cpuCount+'C',cpuCountLogical+'T',ramTotalSize+'MB')
 
 def mapStateToLed(usedPrecent,pipNumber):
         led = 0

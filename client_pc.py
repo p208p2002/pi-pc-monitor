@@ -8,8 +8,7 @@ from core import getBasicMsg,getUsageMsg
 defaulthost = '192.168.43.50'
 defaultPort = 8080
 
-def echo_client(host,port):
-
+def pc_client(host,port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_address = (host, port)
     sock.connect(server_address)
@@ -17,8 +16,6 @@ def echo_client(host,port):
     while True:
         sock.send(getUsageMsg().encode('utf-8'))
         time.sleep(0.25)
-
-
     sock.close()
 
 
@@ -30,4 +27,4 @@ if __name__ == '__main__':
     given_args = parser.parse_args()
     port = given_args.port
     host = given_args.host
-    echo_client(host,port)
+    pc_client(host,port)
