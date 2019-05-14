@@ -42,7 +42,6 @@ cpuLED = IC74595(DS,STCP,SHCP)
 ramLED = IC74595(DS2,STCP2,SHCP2)
 
 def showIP(channel):
-    time.sleep(0.2)
     if (SERVER_IP == 0):
         digNumDisplay.off()
     else:
@@ -161,8 +160,8 @@ def runSocketServer(port):
 if __name__ == '__main__':
     #init
     gpio.setup(DOT_PIN, gpio.OUT)
-    gpio.setup(BTN_PIN, gpio.IN, pull_up_down=gpio.PUD_UP) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
-    gpio.add_event_detect(BTN_PIN,gpio.RISING,callback=showIP) # Setup event on pin 10 rising edge
+    gpio.setup(BTN_PIN, gpio.IN, pull_up_down=gpio.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
+    gpio.add_event_detect(BTN_PIN,gpio.RISING,callback=showIP,bouncetime=200) # Setup event on pin 10 rising edge
 
     #self test
     for x in range(9):
