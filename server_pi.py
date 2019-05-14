@@ -5,6 +5,7 @@ import json
 import time
 import RPi.GPIO as gpio
 import signal
+import sys
 from ic import IC74595,IC7447
 
 host = ''
@@ -43,7 +44,8 @@ cpuLED = IC74595(DS,STCP,SHCP)
 ramLED = IC74595(DS2,STCP2,SHCP2)
 
 def signal_handler(sig, frame):
-    print('You pressed Ctrl+C!')
+    gpio.clean()
+    sys.exit(0)
 
 def showIP(channel):
     if (SERVER_IP == 0):
