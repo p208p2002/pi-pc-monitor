@@ -1,5 +1,5 @@
 # Pi PC monitor
-A Pi PC state monitor design.
+A Pi PC state monitor design for NUTC final project.
 
 Monitor with CPU and RAM usage state.
 
