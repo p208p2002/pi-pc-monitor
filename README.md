@@ -1,4 +1,4 @@
-# 電腦資源監控燈 Pi PC monitor
+# LED電腦資源監控燈 / Pi PC monitor
 A Pi PC state monitor design for NUTC final project.
 
 Monitor with CPU and RAM usage state.
