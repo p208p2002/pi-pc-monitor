@@ -10,9 +10,9 @@ Monitor with CPU and RAM usage state.
 # File description
 file name     | description
 --------------|------------
-client_pc.py  | client file
+client_pc.py  | client code
 core.py       | get PC state info (for client)
-server_pi.py  | server flie
+server_pi.py  | server code
 ic.py         | ic driver class (for server)
 component.fzz | Fritzing file
 document.docx | design document
